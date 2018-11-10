@@ -68,7 +68,9 @@ async def analyze(request):
     data = await request.form()
     img_bytes = await (data['file'].read())
     img = open_image(BytesIO(img_bytes))
-    return JSONResponse({'result': [learn.predict(img)[0] for learn in learners]})
+    return JSONResponse({'result': ['modelName:'+modelDefs[c]['name']+' - prediction:'+learners[c].predict(img)[0]+'\n' for c in range(len(learners))]})
+    #the one below is the right version with a nested json object. The one actually executed does not need to change the webui to display the evaluation of many models
+    #return JSONResponse({'result': [{'modelName':modelDefs[c]['name'],'prediction':learners[c].predict(img)[0]} for c in range(len(learners))]})
 
 if __name__ == '__main__':
     if 'serve' in sys.argv: uvicorn.run(app, host='0.0.0.0', port=5042)
